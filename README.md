@@ -44,7 +44,7 @@ project/
 ### 1️⃣ 克隆项目
 
 git clone https://github.com/ww1k1/opencv-card.git
-cd 项目名
+cd opencv-card
 
 ### 2️⃣ 安装依赖
 
@@ -90,46 +90,70 @@ python ocr_template_match.py -i images/credit_card.png -t template/ocr_a.png
 ### 1️⃣ 模板提取
 
 img = cv2.imread(args["template"])
+
 ref = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
 ref = cv2.threshold(ref, 10, 255, cv2.THRESH_BINARY_INV)[1]
 
 refCnts, _ = cv2.findContours(ref.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
 refCnts = myutils.sort_contours(refCnts, method="left-to-right")[0]
 
 digits = {}
+
 for (i, c) in enumerate(refCnts):
+
     (x, y, w, h) = cv2.boundingRect(c)
+    
     roi = ref[y:y+h, x:x+w]
+    
     roi = cv2.resize(roi, (57, 88))
+    
     digits[i] = roi
+    
 
 ---
 
 ### 2️⃣ 图像预处理
 
 image = cv2.imread(args["image"])
+
 image = myutils.resize(image, width=300)
+
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+
 rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3))
+
 tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKernel)
 
+
 gradX = cv2.Sobel(tophat, cv2.CV_32F, 1, 0)
+
 gradX = np.absolute(gradX)
+
 gradX = (255 * (gradX - np.min(gradX)) / (np.max(gradX) - np.min(gradX)))
+
 gradX = gradX.astype("uint8")
+
 
 ---
 
 ### 3️⃣ 数字识别（模板匹配）
 
 scores = []
+
 for (digit, digitROI) in digits.items():
+
     result = cv2.matchTemplate(roi, digitROI, cv2.TM_CCOEFF)
+    
     (_, score, _, _) = cv2.minMaxLoc(result)
+    
     scores.append(score)
+    
 
 predicted_digit = np.argmax(scores)
+
 
 ---
 
