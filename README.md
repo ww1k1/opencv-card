@@ -43,7 +43,7 @@ project/
 
 ### 1️⃣ 克隆项目
 
-git clone https://github.com/你的用户名/项目名.git
+git clone https://github.com/ww1k1/opencv-card.git
 cd 项目名
 
 ### 2️⃣ 安装依赖
@@ -154,7 +154,7 @@ predicted_digit = np.argmax(scores)
 ### 改进方向
 
 * 使用CNN进行数字识别
-* 引入目标检测模型（如YOLO）
+* 引入目标检测模型
 * 增强数据集，提高鲁棒性
 
 ---
